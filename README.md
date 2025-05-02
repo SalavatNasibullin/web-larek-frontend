@@ -1,4 +1,4 @@
-# Проектная работа "Веб-ларек"
+# Проектная работа "Веб-ларек" https://github.com/SalavatNasibullin/web-larek-frontend.git
 
 Структура проекта:
 - src/ — исходные файлы проекта
