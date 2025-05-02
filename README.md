@@ -1,4 +1,8 @@
+
 # Проектная работа "Веб-ларек" https://github.com/SalavatNasibullin/web-larek-frontend.git
+
+Стек: HTML, SCSS, TS, Webpack
+
 
 Структура проекта:
 - src/ — исходные файлы проекта
@@ -12,6 +16,7 @@
 - src/scss/styles.scss — корневой файл стилей
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
+
 
 ## Описание проекта
 
@@ -189,4 +194,4 @@ npm run build
 
 ```
 yarn build
-```
+

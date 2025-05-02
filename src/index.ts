@@ -1,4 +1,5 @@
 import './scss/styles.scss';
+
 import { Goods, UserForm } from './types';
 import { WebLarekApi } from './components/WebLarekApi';
 import { API_URL, CDN_URL } from './utils/constants';
@@ -178,3 +179,4 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
   modal.locked = false;
 });
+
