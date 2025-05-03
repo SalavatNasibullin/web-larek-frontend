@@ -18,7 +18,7 @@ export class DataModel implements IDataModel {
     this._productCards = [];
   }
 
-  // Метод для установки списка товаров
+  // Метод для возврата всех списоков товаров.
   set productCards(data: Goods[]) {
     this._productCards = data;
     this.events.emit('productCards:receive');

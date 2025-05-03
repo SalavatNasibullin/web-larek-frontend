@@ -1,5 +1,4 @@
-
-# Проектная работа "Веб-ларек" https://github.com/SalavatNasibullin/web-larek-frontend.git
+Проектная работа "Веб-ларек" https://github.com/SalavatNasibullin/web-larek-frontend.git
 
 Стек: HTML, SCSS, TS, Webpack
 
@@ -17,158 +16,208 @@
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
 
-
 ## Описание проекта
+1. Проект WebLarek представляет собой веб-приложение для интернет-магазина, которое позволяет пользователям просматривать товары, добавлять их в корзину, оформлять заказы и выбирать способы оплаты. 
 
-Проект представляет собой интернет-магазин с корзиной товаров, реализованный на TypeScript с использованием паттерна MVP (Model-View-Presenter). В проекте имеется разделение обязанностей между классами: Model отвечает за работу с данными, View — за отображение интерфейса, а EventEmitter выступает в роли посредника, связывающего Model и View через события.
+Модели (DataModel, BasketModel, FormModel) управляют данными и бизнес-логикой.
 
-Стек технологий:
-HTML, SCSS — для разметки и стилей.
+Представления (Card, Basket, Modal) отвечают за отображение интерфейса.
 
-TypeScript — для реализации логики.
+EventEmitter связывает компоненты через события.
 
-Webpack — для сборки проекта.
+WebLarekApi обеспечивает работу с сервером.
+
+## Архитектура
+2. Используемый паттерн проектирования
+В проекте применён паттерн MVP (Model-View-Presenter), который является модификацией паттерна MVC:
+
+Model — отвечает за данные и бизнес-логику.
+
+View — отображает интерфейс и передает события пользователя.
+
+Presenter — управляет взаимодействием между Model и View, обрабатывает события.
+
+Преимущества выбранного подхода:
+Чёткое разделение логики и представления.
+
+Гибкость при изменении интерфейса или бизнес-логики.
+
+Удобное тестирование компонентов.
 
 
-## Описание базовых классов
+## Компоненты
+3. Классы Model (Модели данных)
 
-`Класс Api`
-Отвечает за взаимодействие с сервером. Основные методы:
+`DataModel (DataModel.ts)`
 
-get(uri: string) — получает данные с сервера.
+Задача: Управление данными о товарах.
 
-post(uri: string, data: object) — отправляет данные на сервер.
+Атрибуты:
 
-handleResponse(response: Response) — обрабатывает ответ сервера.
+productCards: Goods[] — массив товаров в каталоге.
 
-`Класс EventEmitter`
-Реализует паттерн 'Наблюдатель' для управления событиями. Позволяет:
+currentItem: Goods — текущий выбранный товар.
 
-Подписываться на события (on).
+Методы:
 
-Отписываться от событий (off).
+set productCards(data: Goods[]) — обновляет список товаров.
 
-Генерировать события (emit).
+get productCards() — возвращает список всех товаров.
 
-Обрабатывать все события сразу (onAll, offAll).
+showItemDetails(item: Goods) — устанавливает текущий товар и открывает его подробности.
 
-## Описание классов Model
+`BasketModel (BasketModel.ts)`
 
-`Класс BasketModel`
-Управляет корзиной товаров:
+Задача: Управление корзиной покупок.
 
-getCounter() — возвращает количество товаров.
+Атрибуты:
 
-getSumAllProducts() — считает общую стоимость.
+basketProducts: Goods[] — массив товаров в корзине.
 
-setSelectedCard(item: Goods) — добавляет товар.
+Методы:
 
-removeFromBasket(item: Goods) — удаляет товар.
+getCounter() — возвращает количество товаров в корзине.
+
+getSumAllProducts() — вычисляет общую стоимость товаров в корзине.
+
+setSelectedCard(data: Goods) — добавляет товар в корзину (без дублирования).
+
+removeFromBasket(item: Goods) — удаляет товар из корзины по идентификатору.
 
 cemptyBasket() — очищает корзину.
 
-`Класс DataModel`
-Хранит данные о товарах:
+isInBasket(item: Goods) — проверяет наличие товара в корзине.
 
-productCards — массив товаров.
+`FormModel (FormModel.ts)`
 
-showItemDetails(item: Goods) — открывает детали товара.
+Задача: Валидация и хранение данных формы заказа.
 
-`Класс FormModel`
-Работает с данными пользователя:
+Атрибуты:
 
-setOrderAddress(field: string, value: string) — сохраняет адрес.
+payment: string — способ оплаты.
 
-validateOrder() — проверяет корректность адреса и оплаты.
+email: string — email пользователя.
 
-setOrderData(field: string, value: string) — сохраняет контакты.
+phone: string — телефон пользователя.
 
-validateContacts() — проверяет корректность email и телефона.
+address: string — адрес доставки.
 
-getOrderLot() — возвращает данные заказа.
+total: number — общая сумма заказа.
 
-## Описание классов View
+items: string[] — массив идентификаторов товаров в заказе.
 
-`Класс Basket`
-Отображает корзину:
+formErrors: FormErrors — ошибки валидации формы.
 
-renderHeaderBasketCounter(value: number) — обновляет счетчик товаров.
+Методы:
 
-renderSumAllProducts(sumAll: number) — показывает общую сумму.
+setOrderAddress(field, value) — сохраняет адрес.
 
-`Класс Card`
-Отображает карточку товара:
+validateOrder() — проверяет корректность введённого адреса и данных по оплате.
 
-setText(element: HTMLElement, value: string) — устанавливает текст.
+setOrderData(field, value) — сохраняет email и телефон пользователя.
 
-setCategory(value: string) — задает категорию товара.
+validateContacts() — проверяет корректность контактных данных.
 
-setPrice(value: number | null) — форматирует цену.
+getOrderLot() — возвращает данные для отправки заказа на сервер.
 
-`Класс Modal`
-Управляет модальными окнами:
+- Классы View 
 
-open() — открывает окно.
+`Card (Card.ts)`
 
-close() — закрывает окно.
+Задача: Отображение карточек товара.
 
-locked — блокирует прокрутку страницы.
+Атрибуты:
 
-`Класс Success`
-Показывает сообщение об успешном заказе:
+_cardElement: HTMLElement — DOM-элемент карточки товара.
 
-render(total: number) — отображает итоговую сумму.
+_cardCategory, _cardTitle, _cardImage, _cardPrice — элементы карточки, отображающие категорию, название, изображение и цену товара.
 
-## Ключевые типы данных
+_colors: Record<string, string> — стили для категорий.
 
-// Интерфейс товаров
-export interface Goods {
-  title: string;
-  description: string;
-  id: string;
-  category: string;
-  image: string;
-  price: number | null;
-}
+Методы:
 
-// Каталог товаров
-export interface GoodsCatalog {
-  getProduct(productId: string): Goods;
-  setProducts(products: Goods[]): void;
-  setView(product: Goods): void;
-  products: Goods[];
-  preview: string | null;
-} 
+setText(element, value) — устанавливает текстовое значение в элемент.
 
-//Данные пользователя
-export interface UserForm {
-  address?: string;
-  payment?: string;
-  email?: string;
-  phone?: string;
-  total?: number;
-}
+setPrice(value) — форматирует и отображает цену товара.
 
-/Действия с данными пользователя
-export interface UserFormsData {
-  getUserInfo(field: keyof UserForm): void;
-  setField(field: keyof UserForm, value: string): void;
-  confirmOrder(): Partial<Record<keyof UserForm, string>>;
-  clearOrderData(): void;
-}
+setCategory(value) — задаёт категорию товара, применяя соответствующий стиль.
 
-//Корзина
-export interface RecycleBin {
-  setProducts(products: Goods[]): void;
-  getViewProducts(): Goods[];
-  getOneProduct(id: string): Goods;
-  getProductsRecycleBin(): number;
-  getTotalPrice(): number;
-  addToRecycleBin(product: Goods): void;
-  removeFromRecycle(product: Goods): void;
-  clearRecycleBin(): void;
-}
+render(data: Goods) — отрисовывает карточку товара с данными из объекта Goods.
 
+`CardPreview (CardPreview.ts)`
+
+Задача: Детальное отображение товара.
+
+Атрибуты:
+
+text: HTMLElement — описание товара.
+
+button: HTMLButtonElement — кнопка "Купить" или "Удалить" из корзины.
+
+data: Goods | null — данные текущего товара.
+
+Методы:
+
+render(data: Goods) — обновляет данные о товаре и кнопки в зависимости от состояния корзины (если товар находится в корзине, кнопка меняется на "Удалить").
+
+`Basket (RecycleBin.ts)`
+
+Задача: Отображение корзины покупок.
+
+Атрибуты:
+
+basket: HTMLElement — контейнер корзины.
+
+basketList: HTMLElement — список товаров в корзине.
+
+basketPrice: HTMLElement — элемент, который отображает общую стоимость товаров.
+
+headerBasketCounter: HTMLElement — счетчик товаров в шапке сайта.
+
+Методы:
+
+renderHeaderBasketCounter(value) — обновляет счетчик товаров в шапке.
+
+renderSumAllProducts(sumAll) — обновляет общую сумму товаров в корзине.
+
+set items — сеттер для обновления списка товаров в корзине.
+
+- Вспомогательные классы
+
+`EventEmitter (events.ts)`
+
+Задача: Управление событиями (реализация паттерна Наблюдатель).
+
+Методы:
+
+on(event, callback) — подписка на событие.
+
+off(event, callback) — отписка от события.
+
+emit(event, data) — генерация события.
+
+trigger(event, context) — создает обработчик события.
+
+`WebLarekApi (WebLarekApi.ts)`
+
+Задача: Работа с API магазина.
+
+Методы:
+
+getProductsList() — загружает список товаров с сервера.
+
+getOneProduct(id) — загружает данные одного товара по его идентификатору.
+
+orderProducts(order) — отправляет данные заказа на сервер.
+
+4. Взаимодействие компонентов
+Открытие страницы: DataModel загружает товары через WebLarekApi и передаёт их в View.
+
+Добавление в корзину: Пользователь добавляет товар в корзину, BasketModel обновляет данные, Basket отображает изменения.
+
+Оформление заказа: Пользователь заполняет форму заказа, FormModel проверяет данные, Order и Contacts отображают форму для ввода данных.
+
+Подтверждение заказа: WebLarekApi отправляет данные заказа на сервер, Success отображает сообщение об успешном заказе.
 
 ## Установка и запуск
 Для установки и запуска проекта необходимо выполнить команды
@@ -194,4 +243,3 @@ npm run build
 
 ```
 yarn build
-
