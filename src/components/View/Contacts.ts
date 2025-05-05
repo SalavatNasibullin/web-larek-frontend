@@ -6,6 +6,7 @@ export interface IContacts {
   buttonSubmit: HTMLButtonElement;
   formErrors: HTMLElement;
   render(): HTMLElement;
+  valid: boolean;
 }
 
 export class Contacts implements IContacts {
@@ -15,10 +16,10 @@ export class Contacts implements IContacts {
   formErrors: HTMLElement;
 
   constructor(template: HTMLTemplateElement, protected events: IEvents) {
-    this.formContacts = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
+    this.formContacts = template.content.querySelector('.form')!.cloneNode(true) as HTMLFormElement;
     this.inputAll = Array.from(this.formContacts.querySelectorAll('.form__input'));
-    this.buttonSubmit = this.formContacts.querySelector('.button');
-    this.formErrors = this.formContacts.querySelector('.form__errors');
+    this.buttonSubmit = this.formContacts.querySelector('.button')!;
+    this.formErrors = this.formContacts.querySelector('.form__errors')!;
 
     // Обработчик событий на изменение в поле ввода
     this.inputAll.forEach(item => {
@@ -27,12 +28,13 @@ export class Contacts implements IContacts {
         const field = target.name;
         const value = target.value;
         this.events.emit(`contacts:changeInput`, { field, value });
-      })
-    })
+      });
+    });
+
     // Обработчик отправки формы
     this.formContacts.addEventListener('submit', (event: Event) => {
       event.preventDefault();
-      this.events.emit('success:open');
+      this.events.emit('form:submit');
     });
   }
 
@@ -40,7 +42,8 @@ export class Contacts implements IContacts {
     this.buttonSubmit.disabled = !value;
   }
 
-  render() {
-    return this.formContacts
+ 
+  render(): HTMLElement {
+    return this.formContacts;
   }
 }

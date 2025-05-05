@@ -1,6 +1,5 @@
 import { IEvents } from '../components/base/events';
-import { FormErrors, Goods } from '../types/index';
-import { BasketModel } from '../components/BasketModel';
+import { FormErrors, Order } from '../types/index';
 
 export interface IFormModel {
   payment: string;
@@ -13,7 +12,9 @@ export interface IFormModel {
   validateOrder(): boolean;
   setOrderData(field: string, value: string): void;
   validateContacts(): boolean;
-  getOrderLot(): object;
+  getOrderLot(): Order;
+  setTotal(total: number): void;
+  setItems(items: string[]): void;
 }
 
 export class FormModel implements IFormModel {
@@ -25,10 +26,7 @@ export class FormModel implements IFormModel {
   items: string[];
   formErrors: FormErrors = {};
 
-  constructor(
-    protected events: IEvents,
-    private basketModel: BasketModel
-  ) {
+  constructor(protected events: IEvents) {
     this.payment = '';
     this.email = '';
     this.phone = '';
@@ -41,15 +39,12 @@ export class FormModel implements IFormModel {
     if (field === 'address') {
       this.address = value;
     }
-
     this.validateOrder();
   }
 
-  validateOrder() {
+  validateOrder(): boolean {
     const regexp = /^[а-яА-ЯёЁa-zA-Z0-9\s\/.,-]{7,}$/;
     const errors: typeof this.formErrors = {};
-
-    this.total = this.basketModel.getSumAllProducts();
 
     if (!this.address) {
       errors.address = 'Необходимо указать адрес';
@@ -76,11 +71,10 @@ export class FormModel implements IFormModel {
     } else if (field === 'phone') {
       this.phone = value;
     }
-
     this.validateContacts();
   }
 
-  validateContacts() {
+  validateContacts(): boolean {
     const regexpEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const regexpPhone = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{10}$/;
     const errors: typeof this.formErrors = {};
@@ -106,15 +100,15 @@ export class FormModel implements IFormModel {
     return Object.keys(errors).length === 0;
   }
 
-  getOrderLot() {
-    const products = this.basketModel.basketProducts;
+  setTotal(total: number) {
+    this.total = total;
+  }
 
-    this.items = products
-      .filter((item: Goods) => item.price !== null)
-      .map((item: Goods) => item.id);
+  setItems(items: string[]) {
+    this.items = items;
+  }
 
-    this.total = this.basketModel.getSumAllProducts();
-
+  getOrderLot(): Order {
     return {
       payment: this.payment,
       email: this.email,

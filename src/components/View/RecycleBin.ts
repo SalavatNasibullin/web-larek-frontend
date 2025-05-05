@@ -34,6 +34,7 @@ export class Basket implements IRecycleBin {
 
     this.button.addEventListener('click', () => { this.events.emit('order:open') });
     this.headerBasketButton.addEventListener('click', () => { this.events.emit('basket:open') });
+    this.title.textContent = 'Корзина';
 
     this.items = [];
   }
@@ -57,8 +58,7 @@ export class Basket implements IRecycleBin {
     this.basketPrice.textContent = `${sumAll} синапсов`;
   }
 
-  render() {
-    this.title.textContent = 'Корзина';
-    return this.basket;
+  render(): HTMLElement {
+    return this.basket; 
   }
 }
