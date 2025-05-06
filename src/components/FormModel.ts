@@ -15,6 +15,7 @@ export interface IFormModel {
   getOrderLot(): Order;
   setTotal(total: number): void;
   setItems(items: string[]): void;
+  getOrderData(): Pick<Order, 'email' | 'phone' | 'address'>;
 }
 
 export class FormModel implements IFormModel {
@@ -118,4 +119,15 @@ export class FormModel implements IFormModel {
       items: this.items,
     };
   }
+
+getOrderData(): Order {
+  return {
+    payment: this.payment,
+    email: this.email,
+    phone: this.phone,
+    address: this.address,
+    total: this.total,
+    items: this.items,
+  };
+}
 }

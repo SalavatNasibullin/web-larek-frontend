@@ -41,7 +41,6 @@ export class Contacts implements IContacts {
   set valid(value: boolean) {
     this.buttonSubmit.disabled = !value;
   }
-
  
   render(): HTMLElement {
     return this.formContacts;

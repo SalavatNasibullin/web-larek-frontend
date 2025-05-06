@@ -15,7 +15,6 @@ import { FormModel } from './components/FormModel';
 import { BasketItem } from './components/View/BasketItem';
 import { Success } from './components/View/Success';
 import { Contacts } from './components/View/Contacts';
-import { OrderPresenter } from './components/Presenter';
 
 // Создание события и модели корзины
 const events = new EventEmitter();
@@ -38,9 +37,6 @@ const basket = new Basket(basketTemplate, events);
 const order = new Order(orderTemplate, events);
 const contacts = new Contacts(contactsTemplate, events);
 const modal = new Modal(document.querySelector('#modal-container') as HTMLElement, events);
-
-// Презентер
-const presenter = new OrderPresenter(events, basketModel, formModel);
 
 // Получение списка товаров с АПИ
 api.getProductsList()
@@ -74,7 +70,6 @@ events.on('modalCard:open', (item: Goods) => {
 // Добавление товара в корзину
 events.on('card:addBasket', () => {
   basketModel.setSelectedCard(dataModel.currentItem);
-  basket.renderHeaderBasketCounter(basketModel.getCounter());
   modal.close();
 });
 
@@ -156,7 +151,9 @@ events.on('order:ready', (orderData: OrderType) => {
       basket.renderHeaderBasketCounter(basketModel.getCounter());
       modal.render();
     })
-    .catch(console.error);
+    .catch((error) => {
+      console.error('Order failed:', error);
+    });
 });
 
 // Переход от контактов к заказу
@@ -176,3 +173,19 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
   modal.locked = false;
 });
+
+// Сборка объекта заказа и отправка
+events.on('order:submit', () => {
+  const payload: OrderType = {
+    ...formModel.getOrderData(),
+    total: basketModel.getSumAllProducts(),
+    items: basketModel.getIds(),
+  };
+
+  events.emit('order:ready', payload);
+});
+
+events.on('form:submit', () => {
+  events.emit('order:submit');
+});
+

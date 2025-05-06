@@ -60,4 +60,8 @@ export class BasketModel implements IMyBasket {
   isInBasket(item: Goods): boolean {
     return this._basketProducts.some(product => product.id === item.id);
   }
+
+  getIds(): string[] {
+    return this.basketProducts.map(item => item.id);
+  }
 }
